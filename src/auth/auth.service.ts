@@ -25,9 +25,7 @@ export class AuthService {
         },
       });
 
-      delete user.hash;
-      // return the saved user
-      return user;
+      return this.signToken(user.id, user.email);
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === "P2002") {
@@ -54,8 +52,22 @@ export class AuthService {
     // if password incorrect throw exception
     if (!pwMatches) throw new ForbiddenException("Credentials incorrect");
 
-    // send back the user
-    delete user.hash;
-    return user;
+    // send back the token access
+    return this.signToken(user.id, user.email);
+  }
+
+  async signToken(userId: number, email: string) {
+    const payload = {
+      sub: userId,
+      email,
+    };
+    const secret = this.config.get("JWT_SECRET");
+
+    const token = await this.jwt.signAsync(payload, {
+      expiresIn: "15m",
+      secret: secret,
+    });
+
+    return { access_token: token };
   }
 }
