@@ -42,8 +42,7 @@ describe("App e2e", () => {
             email: "",
             password: dto.password,
           })
-          .expectStatus(400)
-          .inspect();
+          .expectStatus(400);
       });
 
       it("should throw if password is empty", () => {
@@ -54,8 +53,7 @@ describe("App e2e", () => {
             email: dto.email,
             password: "",
           })
-          .expectStatus(400)
-          .inspect();
+          .expectStatus(400);
       });
 
       it("should throw if no body is provided", () => {
@@ -67,8 +65,7 @@ describe("App e2e", () => {
           .spec()
           .post("/auth/signup")
           .withBody(dto)
-          .expectStatus(201)
-          .inspect();
+          .expectStatus(201);
       });
     });
 
@@ -81,8 +78,7 @@ describe("App e2e", () => {
             email: "",
             password: dto.password,
           })
-          .expectStatus(400)
-          .inspect();
+          .expectStatus(400);
       });
 
       it("should throw if password is empty", () => {
@@ -93,8 +89,7 @@ describe("App e2e", () => {
             email: dto.email,
             password: "",
           })
-          .expectStatus(400)
-          .inspect();
+          .expectStatus(400);
       });
 
       it("should throw if no body is provided", () => {
@@ -107,13 +102,22 @@ describe("App e2e", () => {
           .post("/auth/signin")
           .withBody(dto)
           .expectStatus(200)
-          .inspect();
+          .stores("accessToken", "access_token");
       });
     });
   });
 
   describe("User", () => {
-    describe("Get me", () => {});
+    describe("Get me", () => {
+      it("should get current user", () => {
+        return pactum
+          .spec()
+          .get("/users/me")
+          .withHeaders("Authorization", "Bearer $S{accessToken}")
+          .expectStatus(200)
+          .inspect();
+      });
+    });
 
     describe("Edit user", () => {});
   });
